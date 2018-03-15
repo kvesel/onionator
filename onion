@@ -5,20 +5,20 @@ set -e
 ###################################################################
 # EXPORT SETTINGS
 # Latest Versions
-export APACHEDIST="httpd-2.4.29"
-export APRDIST="apr-1.6.3"
-export APRUTILDIST="apr-util-1.6.1"
-export TORDIST="tor-0.3.2.10"
+APACHEDIST="httpd-2.4.29"
+APRDIST="apr-1.6.3"
+APRUTILDIST="apr-util-1.6.1"
+TORDIST="tor-0.3.2.10"
 
 # Base URLs
-export TORDISTURL="https://www.torproject.org/dist"
-export USBASEURL="https://www-us.apache.org/dist"
-export RUBASEURL="https://apache-mirror.rbc.ru/dist"
+TORDISTURL="https://www.torproject.org/dist"
+USBASEURL="https://www-us.apache.org/dist"
+RUBASEURL="https://apache-mirror.rbc.ru/dist"
 
 # Source Directories
-export APACHEBASEURL=$USBASEURL
-export APACHEDISTURL="$APACHEBASEURL/httpd"
-export APRDISTURL="$APACHEBASEURL/apr"
+APACHEBASEURL=$RUBASEURL
+APACHEDISTURL="$APACHEBASEURL/httpd"
+APRDISTURL="$APACHEBASEURL/apr"
 
 
 
