@@ -12,11 +12,9 @@ TORDIST="tor-0.3.2.10"
 
 # Base URLs
 TORDISTURL="https://www.torproject.org/dist"
-USBASEURL="https://www-us.apache.org/dist"
-RUBASEURL="https://apache-mirror.rbc.ru/dist"
+APACHEBASEURL="https://www-us.apache.org/dist"
 
 # Source Directories
-APACHEBASEURL=$RUBASEURL
 APACHEDISTURL="$APACHEBASEURL/httpd"
 APRDISTURL="$APACHEBASEURL/apr"
 
