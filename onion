@@ -40,7 +40,7 @@ sudo apt-get -y autoclean
 ###################################################################
 mkdir ~/build/
 cd ~/build/
-sudo apt-get -y install libpcre3 libpcre3-dev libevent-dev libssl-dev libexpat-dev make wget
+sudo apt-get -y install gcc libpcre3 libpcre3-dev libevent-dev libssl-dev libexpat-dev make wget
 wget $APACHEDISTURL/$APACHEDIST.tar.bz2
 wget $APRDISTURL/$APRDIST.tar.bz2
 wget $APRDISTURL/$APRUTILDIST.tar.bz2
