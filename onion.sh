@@ -1,0 +1,122 @@
+#!/bin/sh
+set -e
+###################################################################
+# Raspberry Pi Onion Server Installer
+###################################################################
+# EXPORT SETTINGS
+# Latest Versions
+export APACHEDIST="httpd-2.4.29"
+export APRDIST="apr-1.6.3"
+export APRUTILDIST="apr-util-1.6.1"
+export TORDIST="tor-0.3.2.10"
+
+# Base URLs
+export TORDISTURL="https://www.torproject.org/dist"
+export USBASEURL="https://www-us.apache.org/dist"
+export RUBASEURL="https://apache-mirror.rbc.ru/dist"
+
+# Source Directories
+export APACHEBASEURL=$USBASEURL
+export APACHEDISTURL="$APACHEBASEURL/httpd"
+export APRDISTURL="$APACHEBASEURL/apr"
+
+
+
+
+###################################################################
+# UPDATE SYSTEM
+###################################################################
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y dist-upgrade
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+
+
+
+
+###################################################################
+# BUILD FILES
+###################################################################
+mkdir ~/build/
+cd ~/build/
+wget $APACHEDISTURL/$APACHEDIST.tar.bz2
+wget $APRDISTURL/$APRDIST.tar.bz2
+wget $APRDISTURL/$APRUTILDIST.tar.bz2
+wget $TORDISTURL/$TORDIST.tar.gz
+sudo apt-get -y install libpcre3 libpcre3-dev libevent-dev libssl-dev libexpat-dev make
+
+
+###################################################################
+# INSTALL APACHE
+tar xvfj $APACHEDIST.tar.bz2
+
+mkdir -p ./$APACHEDIST/srclib/
+cd ./$APACHEDIST/srclib/
+
+tar xvfj ~/build/$APRDIST.tar.bz2
+tar xvfj ~/build/$APRUTILDIST.tar.bz2
+mv $APRDIST apr
+mv $APRUTILDIST apr-util
+
+cd ~/build/$APACHEDIST/
+./configure --prefix=$HOME/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
+make
+make install
+
+
+###################################################################
+# INSTALL TOR
+cd ~/build/
+tar xvfz $TORDIST.tar.gz
+cd $TORDIST/
+./configure --prefix="$HOME/tor" --exec-prefix="$HOME"
+make
+make install
+mkdir -p ~/tor/var/lib/tor/hidden_service
+cp ~/tor/etc/tor/torrc.sample ~/.torrc
+
+
+
+###################################################################
+# EDIT SETTINGS
+#~/apache/conf/httpd.conf:
+#Listen 127.0.0.1:8080
+#ServerName localhost:8080
+sed -i '0,/Listen 80/ s/Listen 80/Listen 127.0.0.1:8080/' ~/apache/conf/httpd.conf
+sed -i '0,/\#ServerName www.example.com:80/ s/\#ServerName www.example.com:80/\ServerName localhost:8080/' ~/apache/conf/httpd.conf
+
+#~/.torrc:
+#HiddenServiceDir /home/user/tor/var/lib/tor/hidden_service/
+#HiddenServicePort 80 127.0.0.1:8080
+sed -i '0,/\#HiddenServiceDir \/home\// s/\#HiddenServiceDir \/home\//HiddenServiceDir \/home\//' ~/.torrc
+sed -i '0,/\#HiddenServicePort 80 127.0.0.1:80/ s/\#HiddenServicePort 80 127.0.0.1:80/HiddenServicePort 80 127.0.0.1:8080/' ~/.torrc
+sed -i '0,/\#RunAsDaemon 1/ s/\#RunAsDaemon 1/RunAsDaemon 1/' ~/.torrc
+
+
+
+###################################################################
+# START SERVICES
+chmod 700 ~/tor/var/lib/tor/hidden_service/
+~/apache/bin/apachectl start
+~/bin/tor
+echo "* Sleeping 90s for tor daemon..."
+sleep 90s
+echo "* Copying hostname and private_key to ~/"
+cp ~/tor/var/lib/tor/hidden_service/hostname ~/hostname
+cp ~/tor/var/lib/tor/hidden_service/private_key ~/private_key
+ln -s ~/apache/htdocs ~/html
+
+
+
+###################################################################
+# CLEANUP
+###################################################################
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+rm -r ~/build/
+echo -n "Your new onion address is: "
+cat ~/tor/var/lib/tor/hidden_service/hostname
+###################################################################
+# END
+###################################################################
