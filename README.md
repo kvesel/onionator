@@ -7,10 +7,10 @@ Usage:
 
 `cd ~`
 
-`wget https://github.com/kvesel/onionator/onion.sh`
+`wget https://github.com/kvesel/onionator/onion`
 
-`chmod 700 ./onion.sh`
+`chmod 700 ./onion`
 
-`./onion.sh`
+`./onion`
 
 All html documents should be placed in `~/html/`
