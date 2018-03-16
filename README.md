@@ -7,7 +7,7 @@ Usage:
 
 `cd ~`
 
-`wget https://github.com/kvesel/onionator/onion`
+`wget https://github.com/kvesel/onionator/[VERSION]/onion`
 
 `chmod 700 ./onion`
 
