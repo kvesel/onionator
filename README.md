@@ -1,5 +1,5 @@
 # onionator
-Automation script for setting up .onion sites Linux.
+## Automation script for setting up .onion sites on Linux.
 
 Current minimal testing covers Debian 8/9, Fedora 23/24/25/26 and Whonix 13/14. Use at your own risk.
 
