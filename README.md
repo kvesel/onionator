@@ -18,7 +18,7 @@ This facilitates easy offsite backup of the files.
 
 `./onion`
 
-## Rrun
+## Run
 All html documents should be placed in `./html/`
 
 Services will not start on boot, you must run the `start` script.
