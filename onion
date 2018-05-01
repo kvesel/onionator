@@ -1,0 +1,240 @@
+#!/bin/sh
+set -o xtrace
+###################################################################
+# INSTRUCTIONS
+#
+#	Change OSVER SETTINGS for making the script install.
+#	Default is Debian but can be make Fedora. Version
+#	information is later and should be updated for current.
+#
+#	No warranty is provided. The script is made to provide
+#	automated install and configuration of official source.
+#
+#	Script will make PHP7, Tor, APR, and Apache2 to install.
+#	Your file for made hostname will be in directory and
+#	will also print to screen. Files are for keeping in
+#	your base directory folder html (with link to apache/htdocs/).
+#
+#	Server will not start on boot you must run start script.
+#	Script is making secure directory with chmod to remove
+#	other and group access to Apache server.
+#
+#		./start
+#
+###################################################################
+# OSVER SETTINGS
+###################################################################
+
+# Debian
+OSPREFIX='sudo apt-get '
+# Fedora
+#OSPREFIX='sudo dnf '
+
+
+
+
+
+###################################################################
+# INIT SCRIPT
+rm -r ./build/
+set -e
+echo 'onionator-1.1 starting onion creation...'
+###################################################################
+# Automated Onion Server Installer
+###################################################################
+# EXPORT SETTINGS
+# Latest Versions
+APACHEDIST='httpd-2.4.33'
+APRDIST='apr-1.6.3'
+APRUTILDIST='apr-util-1.6.1'
+TORDIST='tor-0.3.2.10'
+PHPDIST='php-7.2.5'
+
+# Base URLs
+APACHEBASEURL='https://www-us.apache.org/dist'
+TORDISTURL='https://www.torproject.org/dist'
+
+# Source Directories
+APACHEDISTURL="$APACHEBASEURL/httpd"
+APRDISTURL="$APACHEBASEURL/apr"
+
+# PHP Support
+PHPHEADDISTURL='http://us2.php.net/get/'
+PHPFOOTDISTURL='.tar.gz/from/this/mirror'
+PHPDISTURL="$PHPHEADDISTURL$PHPDIST$PHPFOOTDISTURL"
+
+BASEINSTALLDIR=`pwd`
+
+
+
+
+###################################################################
+# UPDATE AND INSTALL
+###################################################################
+# Linux
+sudo $OSPREFIX -y update
+sudo $OSPREFIX -y upgrade
+
+# Branch for updates
+if [ "$OSPREFIX" = "sudo dnf " ]; then
+	# Fedora
+	sudo $OSPREFIX -y install gcc make automake wget zlib-devel zip openvpn pcre pcre-devel libevent-devel openssl-devel expat-devel libxml2-devel
+elif [ "$OSPREFIX" = "sudo apt-get " ]; then
+	# Debian
+	sudo $OSPREFIX -y dist-upgrade
+	sudo $OSPREFIX -y autoclean
+	sudo $OSPREFIX -y install gcc make build-essential wget zip zlib1g-dev pkg-config openvpn libpcre3 libpcre3-dev libevent-dev libssl-dev libexpat-dev libxml2-dev
+else
+	echo "[ERROR] Unknown prefix type: $OSPREFIX"
+	exit 1
+fi
+
+sudo $OSPREFIX -y autoremove
+
+
+###################################################################
+# BUILD FILES
+###################################################################
+mkdir $BASEINSTALLDIR/build/
+cd $BASEINSTALLDIR/build/
+wget $APACHEDISTURL/$APACHEDIST.tar.bz2
+wget $APRDISTURL/$APRDIST.tar.bz2
+wget $APRDISTURL/$APRUTILDIST.tar.bz2
+wget $TORDISTURL/$TORDIST.tar.gz
+wget $PHPDISTURL
+mv ./mirror ./$PHPDIST.tar.gz
+
+
+
+
+
+
+###################################################################
+# INSTALL APACHE
+tar xvfj $APACHEDIST.tar.bz2
+
+mkdir -p ./$APACHEDIST/srclib/
+cd ./$APACHEDIST/srclib/
+
+tar xvfj $BASEINSTALLDIR/build/$APRDIST.tar.bz2
+tar xvfj $BASEINSTALLDIR/build/$APRUTILDIST.tar.bz2
+mv $APRDIST apr
+mv $APRUTILDIST apr-util
+
+cd $BASEINSTALLDIR/build/$APACHEDIST/
+./configure --prefix=$HOME/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
+make
+make install
+
+
+
+###################################################################
+# INSTALL TOR
+cd $BASEINSTALLDIR/build/
+tar xvfz $TORDIST.tar.gz
+cd $TORDIST/
+./configure --prefix="$HOME/tor" --exec-prefix="$HOME"
+make
+make install
+mkdir -p $BASEINSTALLDIR/tor/var/lib/tor/hidden_service
+cp $BASEINSTALLDIR/tor/etc/tor/torrc.sample $BASEINSTALLDIR/.torrc
+
+
+
+###################################################################
+# INSTALL PHP
+cd $BASEINSTALLDIR/build/
+tar xvfz $PHPDIST.tar.gz
+cd $PHPDIST/
+./configure --prefix=$BASEINSTALLDIR/apache/php --with-apxs2=$BASEINSTALLDIR/apache/bin/apxs
+make
+#TEST_PHP_ARGS="-q"
+#make test
+make install
+cp ./php.ini-production $BASEINSTALLDIR/apache/php/lib/php.ini
+./libtool --finish $BASEINSTALLDIR/build/$PHPDIST/libs
+echo " "
+echo '<IfModule php7_module>' >> $BASEINSTALLDIR/apache/conf/httpd.conf
+echo '	AddType application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
+echo '	AddHandler application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
+echo '</IfModule>' >> $BASEINSTALLDIR/apache/conf/httpd.conf
+echo '<html><head></head><body><?php print("It works!"); ?></body></html>' > $BASEINSTALLDIR/apache/htdocs/index.php
+# EDIT SETTINGS
+#$BASEINSTALLDIR/apache/conf/httpd.conf:
+#DirectoryIndex index.php index.htm index.html
+sed -i '0,/DirectoryIndex index.html/ s/DirectoryIndex index.html/DirectoryIndex index.php index.htm index.html/' $BASEINSTALLDIR/apache/conf/httpd.conf
+
+
+
+
+
+
+###################################################################
+# EDIT SETTINGS
+#$BASEINSTALLDIR/apache/conf/httpd.conf:
+#Listen 127.0.0.1:8080
+#ServerName localhost:8080
+sed -i '0,/Listen 80/ s/Listen 80/Listen 127.0.0.1:8080/' $BASEINSTALLDIR/apache/conf/httpd.conf
+sed -i '0,/\#ServerName www.example.com:80/ s/\#ServerName www.example.com:80/\ServerName localhost:8080/' $BASEINSTALLDIR/apache/conf/httpd.conf
+
+#$BASEINSTALLDIR/.torrc:
+#HiddenServiceDir /home/user/tor/var/lib/tor/hidden_service/
+#HiddenServicePort 80 127.0.0.1:8080
+sed -i '0,/\#HiddenServiceDir \/home\// s/\#HiddenServiceDir \/home\//HiddenServiceDir \/home\//' $BASEINSTALLDIR/.torrc
+sed -i '0,/\#HiddenServicePort 80 127.0.0.1:80/ s/\#HiddenServicePort 80 127.0.0.1:80/HiddenServicePort 80 127.0.0.1:8080/' $BASEINSTALLDIR/.torrc
+sed -i '0,/\#RunAsDaemon 1/ s/\#RunAsDaemon 1/RunAsDaemon 1/' $BASEINSTALLDIR/.torrc
+
+
+
+###################################################################
+# START SERVICES
+chmod 700 $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
+$BASEINSTALLDIR/apache/bin/apachectl start
+$BASEINSTALLDIR/bin/tor
+echo '* Sleeping 90s for tor daemon...'
+sleep 90s
+echo '* Copying hostname and private_key to $BASEINSTALLDIR/'
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
+ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
+
+
+
+###################################################################
+# BUILD START
+echo '#!/bin/sh' > $BASEINSTALLDIR/start
+echo 'set -e' >> $BASEINSTALLDIR/start
+echo "echo 'Securing $BASEINSTALLDIR ...'" >> $BASEINSTALLDIR/start
+echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/" >> $BASEINSTALLDIR/start
+echo "echo 'Starting OpenVPN ...'" >> $BASEINSTALLDIR/start
+echo "echo 'OpenVPN config not found.'" >> $BASEINSTALLDIR/start
+echo "echo 'Starting apache service...'" >> $BASEINSTALLDIR/start
+echo "$BASEINSTALLDIR/apache/bin/apachectl start" >> $BASEINSTALLDIR/start
+echo "echo 'Starting tor service...'" >> $BASEINSTALLDIR/start
+echo '/bin/tor' >> $BASEINSTALLDIR/start
+chmod 700 $BASEINSTALLDIR/start
+
+
+
+###################################################################
+# CLEANUP
+###################################################################
+sudo $OSPREFIX -y autoremove
+if [ "$OSPREFIX" = "sudo apt-get " ]; then
+	sudo $OSPREFIX -y autoclean
+fi
+
+rm -r $BASEINSTALLDIR/build/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
+echo -n 'Your new onion address is: '
+cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
+###################################################################
+# END
+###################################################################
