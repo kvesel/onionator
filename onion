@@ -196,7 +196,7 @@ $BASEINSTALLDIR/apache/bin/apachectl start
 $BASEINSTALLDIR/bin/tor
 echo '* Sleeping 90s for tor daemon...'
 sleep 90s
-echo '* Copying hostname and private_key to $BASEINSTALLDIR/'
+echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
 cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
 cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
 ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
