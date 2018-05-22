@@ -192,8 +192,12 @@ sed -i '0,/\#RunAsDaemon 1/ s/\#RunAsDaemon 1/RunAsDaemon 1/' $BASEINSTALLDIR/.t
 # BUILD START
 echo '#!/bin/sh' > $BASEINSTALLDIR/start
 echo 'set -e' >> $BASEINSTALLDIR/start
-echo "echo 'Securing $BASEINSTALLDIR ...'" >> $BASEINSTALLDIR/start
-echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/" >> $BASEINSTALLDIR/start
+echo "echo 'Securing $BASEINSTALLDIR onion server...'" >> $BASEINSTALLDIR/start
+echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/" >> $BASEINSTALLDIR/start
+echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/" >> $BASEINSTALLDIR/start
+echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/" >> $BASEINSTALLDIR/start
+echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/" >> $BASEINSTALLDIR/start
+echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc" >> $BASEINSTALLDIR/start
 echo "echo 'Starting OpenVPN ...'" >> $BASEINSTALLDIR/start
 echo "echo 'OpenVPN config not found.'" >> $BASEINSTALLDIR/start
 echo "echo 'Starting apache service...'" >> $BASEINSTALLDIR/start
