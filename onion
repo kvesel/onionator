@@ -233,7 +233,7 @@ chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
-echo -n 'Your new onion address is: '
+echo 'Your new onion address is: '
 cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
 ###################################################################
 # END
