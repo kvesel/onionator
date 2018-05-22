@@ -214,7 +214,7 @@ echo "echo 'OpenVPN config not found.'" >> $BASEINSTALLDIR/start
 echo "echo 'Starting apache service...'" >> $BASEINSTALLDIR/start
 echo "$BASEINSTALLDIR/apache/bin/apachectl start" >> $BASEINSTALLDIR/start
 echo "echo 'Starting tor service...'" >> $BASEINSTALLDIR/start
-echo '/bin/tor' >> $BASEINSTALLDIR/start
+echo "$BASEINSTALLDIR/bin/tor" >> $BASEINSTALLDIR/start
 chmod 700 $BASEINSTALLDIR/start
 
 
