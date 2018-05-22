@@ -133,7 +133,7 @@ make install
 cd $BASEINSTALLDIR/build/
 tar xvfz $TORDIST.tar.gz
 cd $TORDIST/
-./configure --prefix="$HOME/tor" --exec-prefix="$HOME"
+./configure --prefix="$BASEINSTALLDIR/tor" --exec-prefix="$BASEINSTALLDIR"
 make
 make install
 mkdir -p $BASEINSTALLDIR/tor/var/lib/tor/hidden_service
