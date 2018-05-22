@@ -26,9 +26,9 @@ set -o xtrace
 ###################################################################
 
 # Debian
-OSPREFIX='sudo apt-get '
+OSPREFIX='apt-get '
 # Fedora
-#OSPREFIX='sudo dnf '
+#OSPREFIX='dnf '
 
 
 
@@ -76,10 +76,10 @@ sudo $OSPREFIX -y update
 sudo $OSPREFIX -y upgrade
 
 # Branch for updates
-if [ "$OSPREFIX" = "sudo dnf " ]; then
+if [ "$OSPREFIX" = "dnf " ]; then
 	# Fedora
 	sudo $OSPREFIX -y install gcc make automake wget zlib-devel zip openvpn pcre pcre-devel libevent-devel openssl-devel expat-devel libxml2-devel
-elif [ "$OSPREFIX" = "sudo apt-get " ]; then
+elif [ "$OSPREFIX" = "apt-get " ]; then
 	# Debian
 	sudo $OSPREFIX -y dist-upgrade
 	sudo $OSPREFIX -y autoclean
@@ -223,7 +223,7 @@ chmod 700 $BASEINSTALLDIR/start
 # CLEANUP
 ###################################################################
 sudo $OSPREFIX -y autoremove
-if [ "$OSPREFIX" = "sudo apt-get " ]; then
+if [ "$OSPREFIX" = "apt-get " ]; then
 	sudo $OSPREFIX -y autoclean
 fi
 
