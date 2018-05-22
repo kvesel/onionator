@@ -36,6 +36,7 @@ OSPREFIX='sudo apt-get '
 
 ###################################################################
 # INIT SCRIPT
+echo 'Cleaning build directory...'
 rm -r ./build/
 set -e
 echo 'onionator-1.1 starting onion creation...'
@@ -211,10 +212,7 @@ sudo $OSPREFIX -y autoremove
 if [ "$OSPREFIX" = "sudo apt-get " ]; then
 	sudo $OSPREFIX -y autoclean
 fi
-
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
 ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
@@ -230,6 +228,8 @@ sleep 90s
 echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
 cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
 cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
 echo -n 'Your new onion address is: '
 cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
 
