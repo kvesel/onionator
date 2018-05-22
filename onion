@@ -4,16 +4,17 @@
 # INSTRUCTIONS
 #
 #	Change OSVER SETTINGS for making the script install.
-#	Default is Debian but can be make Fedora. Version
-#	information is later and should be updated for current.
+#	Default is Debian but can be made to Fedora. Version
+#	information should be updated for current.
 #
 #	No warranty is provided. The script is made to provide
 #	automated install and configuration of official source.
 #
 #	Script will make PHP7, Tor, APR, and Apache2 to install.
-#	Your file for made hostname will be in directory and
+#	Your file for hostname will be in base directory and
 #	will also print to screen. Files are for keeping in
-#	your base directory folder html (with link to apache/htdocs/).
+#	your base directory folder ./html/
+#	(with link to apache/htdocs/).
 #
 #	Server will not start on boot you must run start script.
 #	Script is making secure directory with chmod to remove
