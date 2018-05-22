@@ -122,7 +122,7 @@ mv $APRDIST apr
 mv $APRUTILDIST apr-util
 
 cd $BASEINSTALLDIR/build/$APACHEDIST/
-./configure --prefix=$HOME/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
+./configure --prefix=$BASEINSTALLDIR/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
 make
 make install
 
@@ -133,7 +133,7 @@ make install
 cd $BASEINSTALLDIR/build/
 tar xvfz $TORDIST.tar.gz
 cd $TORDIST/
-./configure --prefix="$HOME/tor" --exec-prefix="$HOME"
+./configure --prefix="$BASEINSTALLDIR/tor" --exec-prefix="$BASEINSTALLDIR"
 make
 make install
 mkdir -p $BASEINSTALLDIR/tor/var/lib/tor/hidden_service
