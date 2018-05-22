@@ -153,7 +153,7 @@ make
 make install
 cp ./php.ini-production $BASEINSTALLDIR/apache/php/lib/php.ini
 ./libtool --finish $BASEINSTALLDIR/build/$PHPDIST/libs
-echo " "
+echo " " >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '<IfModule php7_module>' >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '	AddType application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '	AddHandler application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
