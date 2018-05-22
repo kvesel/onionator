@@ -186,22 +186,6 @@ sed -i '0,/\#RunAsDaemon 1/ s/\#RunAsDaemon 1/RunAsDaemon 1/' $BASEINSTALLDIR/.t
 
 
 
-###################################################################
-# START SERVICES
-chmod 700 $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
-$BASEINSTALLDIR/apache/bin/apachectl start
-$BASEINSTALLDIR/bin/tor
-echo '* Sleeping 90s for tor daemon...'
-sleep 90s
-echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
-cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
-cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
-ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
-
-
 
 ###################################################################
 # BUILD START
@@ -216,6 +200,22 @@ echo "$BASEINSTALLDIR/apache/bin/apachectl start" >> $BASEINSTALLDIR/start
 echo "echo 'Starting tor service...'" >> $BASEINSTALLDIR/start
 echo '/bin/tor' >> $BASEINSTALLDIR/start
 chmod 700 $BASEINSTALLDIR/start
+
+
+###################################################################
+# START SERVICES
+chmod 700 $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
+$BASEINSTALLDIR/apache/bin/apachectl start
+$BASEINSTALLDIR/bin/tor
+echo '* Sleeping 90s for tor daemon...'
+sleep 90s
+echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
+ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
 
 
 
