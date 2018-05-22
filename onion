@@ -122,7 +122,7 @@ mv $APRDIST apr
 mv $APRUTILDIST apr-util
 
 cd $BASEINSTALLDIR/build/$APACHEDIST/
-./configure --prefix=$HOME/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
+./configure --prefix=$BASEINSTALLDIR/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
 make
 make install
 
