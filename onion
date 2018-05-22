@@ -202,21 +202,6 @@ echo '/bin/tor' >> $BASEINSTALLDIR/start
 chmod 700 $BASEINSTALLDIR/start
 
 
-###################################################################
-# START SERVICES
-chmod 700 $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
-$BASEINSTALLDIR/apache/bin/apachectl start
-$BASEINSTALLDIR/bin/tor
-echo '* Sleeping 90s for tor daemon...'
-sleep 90s
-echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
-cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
-cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
-ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
-
 
 
 ###################################################################
@@ -227,14 +212,30 @@ if [ "$OSPREFIX" = "sudo apt-get " ]; then
 	sudo $OSPREFIX -y autoclean
 fi
 
-rm -r $BASEINSTALLDIR/build/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
+ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
+
+
+###################################################################
+# START SERVICES
+chmod 700 $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/
+$BASEINSTALLDIR/apache/bin/apachectl start
+$BASEINSTALLDIR/bin/tor
+echo '* Sleeping 90s for tor daemon...'
+sleep 90s
+echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
 echo -n 'Your new onion address is: '
 cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
+
+
+
+rm -r $BASEINSTALLDIR/build/
 ###################################################################
 # END
 ###################################################################
