@@ -1,20 +1,19 @@
 #!/bin/sh
-#set -o xtrace
+set -o xtrace
 ###################################################################
 # INSTRUCTIONS
 #
 #	Change OSVER SETTINGS for making the script install.
-#	Default is Debian but can be made to Fedora. Version
-#	information should be updated for current.
+#	Default is Debian but can be make Fedora. Version
+#	information is later and should be updated for current.
 #
 #	No warranty is provided. The script is made to provide
 #	automated install and configuration of official source.
 #
 #	Script will make PHP7, Tor, APR, and Apache2 to install.
-#	Your file for hostname will be in base directory and
+#	Your file for made hostname will be in directory and
 #	will also print to screen. Files are for keeping in
-#	your base directory folder ./html/
-#	(with link to apache/htdocs/).
+#	your base directory folder html (with link to apache/htdocs/).
 #
 #	Server will not start on boot you must run start script.
 #	Script is making secure directory with chmod to remove
@@ -37,7 +36,6 @@ OSPREFIX='sudo apt-get '
 
 ###################################################################
 # INIT SCRIPT
-echo 'Cleaning build directory...'
 rm -r ./build/
 set -e
 echo 'onionator-1.1 starting onion creation...'
@@ -124,7 +122,7 @@ mv $APRDIST apr
 mv $APRUTILDIST apr-util
 
 cd $BASEINSTALLDIR/build/$APACHEDIST/
-./configure --prefix=$BASEINSTALLDIR/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
+./configure --prefix=$HOME/apache --with-included-apr --enable-rewrite --enable-deflate --enable-vhost-alias --disable-ssl --disable-actions
 make
 make install
 
@@ -135,7 +133,7 @@ make install
 cd $BASEINSTALLDIR/build/
 tar xvfz $TORDIST.tar.gz
 cd $TORDIST/
-./configure --prefix="$BASEINSTALLDIR/tor" --exec-prefix="$BASEINSTALLDIR"
+./configure --prefix="$HOME/tor" --exec-prefix="$HOME"
 make
 make install
 mkdir -p $BASEINSTALLDIR/tor/var/lib/tor/hidden_service
@@ -155,7 +153,7 @@ make
 make install
 cp ./php.ini-production $BASEINSTALLDIR/apache/php/lib/php.ini
 ./libtool --finish $BASEINSTALLDIR/build/$PHPDIST/libs
-echo " " >> $BASEINSTALLDIR/apache/conf/httpd.conf
+echo " "
 echo '<IfModule php7_module>' >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '	AddType application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '	AddHandler application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
@@ -188,17 +186,29 @@ sed -i '0,/\#RunAsDaemon 1/ s/\#RunAsDaemon 1/RunAsDaemon 1/' $BASEINSTALLDIR/.t
 
 
 
+###################################################################
+# START SERVICES
+chmod 700 $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
+$BASEINSTALLDIR/apache/bin/apachectl start
+$BASEINSTALLDIR/bin/tor
+echo '* Sleeping 90s for tor daemon...'
+sleep 90s
+echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
+cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
+ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
+
+
 
 ###################################################################
 # BUILD START
 echo '#!/bin/sh' > $BASEINSTALLDIR/start
 echo 'set -e' >> $BASEINSTALLDIR/start
-echo "echo 'Securing $BASEINSTALLDIR onion server...'" >> $BASEINSTALLDIR/start
-echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/" >> $BASEINSTALLDIR/start
-echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/" >> $BASEINSTALLDIR/start
-echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/" >> $BASEINSTALLDIR/start
-echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/" >> $BASEINSTALLDIR/start
-echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc" >> $BASEINSTALLDIR/start
+echo "echo 'Securing $BASEINSTALLDIR ...'" >> $BASEINSTALLDIR/start
+echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/" >> $BASEINSTALLDIR/start
 echo "echo 'Starting OpenVPN ...'" >> $BASEINSTALLDIR/start
 echo "echo 'OpenVPN config not found.'" >> $BASEINSTALLDIR/start
 echo "echo 'Starting apache service...'" >> $BASEINSTALLDIR/start
@@ -209,7 +219,6 @@ chmod 700 $BASEINSTALLDIR/start
 
 
 
-
 ###################################################################
 # CLEANUP
 ###################################################################
@@ -217,30 +226,16 @@ sudo $OSPREFIX -y autoremove
 if [ "$OSPREFIX" = "sudo apt-get " ]; then
 	sudo $OSPREFIX -y autoclean
 fi
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
-ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
-
-
-###################################################################
-# START SERVICES
-chmod 700 $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/
-$BASEINSTALLDIR/apache/bin/apachectl start
-$BASEINSTALLDIR/bin/tor
-echo '* Sleeping 90s for tor daemon...'
-sleep 90s
-echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
-cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
-cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
-echo -n 'Your new onion address is: '
-cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
-
-
 
 rm -r $BASEINSTALLDIR/build/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
+chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
+echo -n 'Your new onion address is: '
+cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
 ###################################################################
 # END
 ###################################################################
+
