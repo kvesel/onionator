@@ -181,7 +181,6 @@ sed -i '0,/\#ServerName www.example.com:80/ s/\#ServerName www.example.com:80/\S
 #HiddenServiceDir /home/user/tor/var/lib/tor/hidden_service/
 #HiddenServicePort 80 127.0.0.1:8080
 #sed -i '0,/\#HiddenServiceDir \/home\// s/\#HiddenServiceDir \/home\//HiddenServiceDir \/home\//' $BASEINSTALLDIR/.torrc
-sed -i '0,/\#DataDirectory \// s/\#DataDirectory \//DataDirectory \//' $BASEINSTALLDIR/.torrc
 sed -i '0,/\#HiddenServiceDir \// s/\#HiddenServiceDir \//HiddenServiceDir \//' $BASEINSTALLDIR/.torrc
 sed -i '0,/\#HiddenServicePort 80 127.0.0.1:80/ s/\#HiddenServicePort 80 127.0.0.1:80/HiddenServicePort 80 127.0.0.1:8080/' $BASEINSTALLDIR/.torrc
 sed -i '0,/\#RunAsDaemon 1/ s/\#RunAsDaemon 1/RunAsDaemon 1/' $BASEINSTALLDIR/.torrc
