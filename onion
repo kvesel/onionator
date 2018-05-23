@@ -231,7 +231,7 @@ fi
 rm -r $BASEINSTALLDIR/build/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/tor/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.tor/
-chmod -R o-rwx,g-rwx $BASEINSTALLDIR/.torrc
+chmod o-rwx,g-rwx $BASEINSTALLDIR/.torrc
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
 echo 'Your new onion address is: '
