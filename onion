@@ -12,8 +12,8 @@ set -o xtrace
 #
 #	Script will make PHP7, Tor, APR, and Apache2 to install.
 #	Your file for made hostname will be in directory and
-#	will also print to screen. Files are for keeping in
-#	your base directory folder html (with link to apache/htdocs/).
+#	will also print to screen. Files are for keeping in your
+#	base directory folder html (with link to apache/htdocs/).
 #
 #	Server will not start on boot you must run start script.
 #	Script is making secure directory with chmod to remove
