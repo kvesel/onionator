@@ -211,7 +211,7 @@ echo 'set -e' >> $BASEINSTALLDIR/start
 echo "echo 'Securing $BASEINSTALLDIR ...'" >> $BASEINSTALLDIR/start
 echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/" >> $BASEINSTALLDIR/start
 echo "echo 'Starting OpenVPN ...'" >> $BASEINSTALLDIR/start
-echo "echo 'OpenVPN config not found.'" >> $BASEINSTALLDIR/start
+echo "echo 'WARNING! OpenVPN config not found.'" >> $BASEINSTALLDIR/start
 echo "echo 'Starting apache service...'" >> $BASEINSTALLDIR/start
 echo "$BASEINSTALLDIR/apache/bin/apachectl start" >> $BASEINSTALLDIR/start
 echo "echo 'Starting tor service...'" >> $BASEINSTALLDIR/start
