@@ -207,7 +207,7 @@ ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
 ###################################################################
 # BUILD START
 echo '#!/bin/sh' > $BASEINSTALLDIR/start
-echo 'set -e' >> $BASEINSTALLDIR/start
+echo '#set -e' >> $BASEINSTALLDIR/start
 echo "echo 'Securing $BASEINSTALLDIR ...'" >> $BASEINSTALLDIR/start
 echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/" >> $BASEINSTALLDIR/start
 echo "echo 'Starting OpenVPN ...'" >> $BASEINSTALLDIR/start
