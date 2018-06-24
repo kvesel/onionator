@@ -47,8 +47,8 @@ echo 'onionator-1.1 starting onion creation...'
 APACHEDIST='httpd-2.4.33'
 APRDIST='apr-1.6.3'
 APRUTILDIST='apr-util-1.6.1'
-TORDIST='tor-0.3.2.10'
-PHPDIST='php-7.2.5'
+TORDIST='tor-0.3.3.7'
+PHPDIST='php-7.2.7'
 
 # Base URLs
 APACHEBASEURL='https://www-us.apache.org/dist'
@@ -176,6 +176,7 @@ sed -i '0,/DirectoryIndex index.html/ s/DirectoryIndex index.html/DirectoryIndex
 #ServerName localhost:8080
 sed -i '0,/Listen 80/ s/Listen 80/Listen 127.0.0.1:8080/' $BASEINSTALLDIR/apache/conf/httpd.conf
 sed -i '0,/\#ServerName www.example.com:80/ s/\#ServerName www.example.com:80/\ServerName localhost:8080/' $BASEINSTALLDIR/apache/conf/httpd.conf
+sed -i '0,/Options Indexes FollowSymLinks/ s/Options Indexes FollowSymLinks/Options -Indexes +FollowSymLinks/' $BASEINSTALLDIR/apache/conf/httpd.conf
 
 #$BASEINSTALLDIR/.torrc:
 #HiddenServiceDir /home/user/tor/var/lib/tor/hidden_service/
