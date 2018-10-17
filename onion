@@ -44,11 +44,11 @@ echo 'onionator-1.1 starting onion creation...'
 ###################################################################
 # EXPORT SETTINGS
 # Latest Versions
-APACHEDIST='httpd-2.4.33'
-APRDIST='apr-1.6.3'
+APACHEDIST='httpd-2.4.35'
+APRDIST='apr-1.6.5'
 APRUTILDIST='apr-util-1.6.1'
-TORDIST='tor-0.3.3.7'
-PHPDIST='php-7.2.7'
+TORDIST='tor-0.3.4.8'
+PHPDIST='php-7.2.11'
 
 # Base URLs
 APACHEBASEURL='https://www-us.apache.org/dist'
@@ -158,7 +158,8 @@ echo '<IfModule php7_module>' >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '	AddType application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '	AddHandler application/x-httpd-php .php' >> $BASEINSTALLDIR/apache/conf/httpd.conf
 echo '</IfModule>' >> $BASEINSTALLDIR/apache/conf/httpd.conf
-echo '<html><head></head><body><?php print("It works!"); ?></body></html>' > $BASEINSTALLDIR/apache/htdocs/index.php
+echo '<html><head></head><body><?php print("It works!"); ?></body></html>' > $BASEINSTALLDIR/build/index.php
+cp -n $BASEINSTALLDIR/build/index.php $BASEINSTALLDIR/apache/htdocs/index.php
 # EDIT SETTINGS
 #$BASEINSTALLDIR/apache/conf/httpd.conf:
 #DirectoryIndex index.php index.htm index.html
@@ -176,7 +177,6 @@ sed -i '0,/DirectoryIndex index.html/ s/DirectoryIndex index.html/DirectoryIndex
 #ServerName localhost:8080
 sed -i '0,/Listen 80/ s/Listen 80/Listen 127.0.0.1:8080/' $BASEINSTALLDIR/apache/conf/httpd.conf
 sed -i '0,/\#ServerName www.example.com:80/ s/\#ServerName www.example.com:80/\ServerName localhost:8080/' $BASEINSTALLDIR/apache/conf/httpd.conf
-sed -i '0,/Options Indexes FollowSymLinks/ s/Options Indexes FollowSymLinks/Options -Indexes +FollowSymLinks/' $BASEINSTALLDIR/apache/conf/httpd.conf
 
 #$BASEINSTALLDIR/.torrc:
 #HiddenServiceDir /home/user/tor/var/lib/tor/hidden_service/
@@ -201,7 +201,6 @@ sleep 90s
 echo "* Copying hostname and private_key to $BASEINSTALLDIR/"
 cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname $BASEINSTALLDIR/hostname
 cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/private_key
-ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
 
 
 
@@ -237,7 +236,7 @@ chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
 echo 'Your new onion address is: '
 cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
+ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
 ###################################################################
 # END
 ###################################################################
-
