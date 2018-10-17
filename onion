@@ -37,7 +37,6 @@ OSPREFIX='apt-get '
 ###################################################################
 # INIT SCRIPT
 rm -r ./build/
-set -e
 echo 'onionator-1.1 starting onion creation...'
 ###################################################################
 # Automated Onion Server Installer
@@ -90,6 +89,10 @@ else
 fi
 
 sudo $OSPREFIX -y autoremove
+
+
+# Break install errors
+set -e
 
 
 ###################################################################
