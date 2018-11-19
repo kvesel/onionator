@@ -43,11 +43,11 @@ echo 'onionator-1.1 starting onion creation...'
 ###################################################################
 # EXPORT SETTINGS
 # Latest Versions
-APACHEDIST='httpd-2.4.35'
+APACHEDIST='httpd-2.4.37'
 APRDIST='apr-1.6.5'
 APRUTILDIST='apr-util-1.6.1'
-TORDIST='tor-0.3.4.8'
-PHPDIST='php-7.2.11'
+TORDIST='tor-0.3.4.9'
+PHPDIST='php-7.2.12'
 
 # Base URLs
 APACHEBASEURL='https://www-us.apache.org/dist'
@@ -66,7 +66,9 @@ BASEINSTALLDIR=`pwd`
 
 
 
-
+`pwd`/apache/bin/apachectl stop
+pkill tor
+set -e
 ###################################################################
 # UPDATE AND INSTALL
 ###################################################################
@@ -89,10 +91,6 @@ else
 fi
 
 sudo $OSPREFIX -y autoremove
-
-
-# Break install errors
-set -e
 
 
 ###################################################################
@@ -210,14 +208,11 @@ cp $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/private_key $BASEINSTALLDIR/pr
 ###################################################################
 # BUILD START
 echo '#!/bin/sh' > $BASEINSTALLDIR/start
-echo '#set -e' >> $BASEINSTALLDIR/start
-echo "echo 'Securing $BASEINSTALLDIR ...'" >> $BASEINSTALLDIR/start
+echo 'set -o xtrace' >> $BASEINSTALLDIR/start
+echo "$BASEINSTALLDIR/apache/bin/apachectl stop" >> $BASEINSTALLDIR/start
+echo 'pkill tor' >> $BASEINSTALLDIR/start
 echo "chmod -R o-rwx,g-rwx $BASEINSTALLDIR/" >> $BASEINSTALLDIR/start
-echo "echo 'Starting OpenVPN ...'" >> $BASEINSTALLDIR/start
-echo "echo 'WARNING! OpenVPN config not found.'" >> $BASEINSTALLDIR/start
-echo "echo 'Starting apache service...'" >> $BASEINSTALLDIR/start
 echo "$BASEINSTALLDIR/apache/bin/apachectl start" >> $BASEINSTALLDIR/start
-echo "echo 'Starting tor service...'" >> $BASEINSTALLDIR/start
 echo "$BASEINSTALLDIR/bin/tor" >> $BASEINSTALLDIR/start
 chmod 700 $BASEINSTALLDIR/start
 
@@ -239,7 +234,14 @@ chmod -R o-rwx,g-rwx $BASEINSTALLDIR/apache/
 chmod -R o-rwx,g-rwx $BASEINSTALLDIR/bin/
 echo 'Your new onion address is: '
 cat $BASEINSTALLDIR/tor/var/lib/tor/hidden_service/hostname
-ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
+
+HTDOCSLNFILE="$BASEINSTALLDIR/apache/html"
+if [ -e "$HTDOCSLNFILE" -o -h "$HTDOCSLNFILE" ]
+then
+	echo 'html link found already.'
+else
+	ln -s $BASEINSTALLDIR/apache/htdocs $BASEINSTALLDIR/html
+fi
 ###################################################################
 # END
 ###################################################################
